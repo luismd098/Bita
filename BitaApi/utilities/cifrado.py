@@ -22,8 +22,9 @@ class AESCipher(object):
             return ""
 
     def validate(self, psw1, psw2):
+        psw1_decrypted = self.decrypt(psw1)
         psw2_decrypted = self.decrypt(psw2)
-        return psw1 == psw2_decrypted
+        return psw1_decrypted == psw2_decrypted
     
     def _pad(self, s):
         return s + (self.bs - len(s) % self.bs) * chr(self.bs - len(s) % self.bs)
