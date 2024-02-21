@@ -21,14 +21,24 @@ class AreaSerializer(serializers.ModelSerializer):
             fields = '__all__'
             
 class BitacoraSerializer(serializers.ModelSerializer):
+    Reportes = serializers.SerializerMethodField()
     class Meta:
             model = Bitacora
-            fields = ('BitacoraId','Nombre','NumeroEquipo','Modelo','Version','Activo','Area')
-            
+            fields = ('BitacoraId','Nombre','NumeroEquipo','Modelo','Version','Activo','Area','Reportes')
+
+    def get_Reportes(self, bitacora):
+        reportes = bitacora.reporte_set.all()
+        serializer = ReporteSerializer(reportes, many=True)
+        return serializer.data
     def to_representation(self, instance):
         self.fields['Area'] =  AreaSerializer(read_only=True)
         return super(BitacoraSerializer, self).to_representation(instance)
     
+class BitacoraNameSerializer(serializers.ModelSerializer):
+    class Meta:
+            model = Bitacora
+            fields = ('BitacoraId','Nombre')
+
 class EstatusReporteSerializer(serializers.ModelSerializer):
     class Meta:
             model = EstatusReporte
@@ -52,9 +62,9 @@ class RelBitacoraLicenciaSerializer(serializers.ModelSerializer):
 class ReporteSerializer(serializers.ModelSerializer):
     class Meta:
             model = Reporte
-            fields = ("ReporteId","Descripcion","FechaCreacion","Activo","EstatusReportes","Bitacoras")
+            fields = ("ReporteId","Bitacoras","Descripcion","FechaCreacion","Activo","EstatusReportes")
     
     def to_representation(self, instance):
         self.fields['EstatusReportes'] =  EstatusReporteSerializer(read_only=True)
-        self.fields['Bitacoras'] =  BitacoraSerializer(read_only=True)
+        self.fields['Bitacoras'] = BitacoraNameSerializer(read_only=True)
         return super(ReporteSerializer, self).to_representation(instance)
