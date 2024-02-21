@@ -51,8 +51,8 @@ def loginApi(request,id=0):
 def areasApi(request,id=0):
     try: 
         if request.method == 'GET':
-            bitacoras = Area.objects.all()
-            area_serializer = AreaSerializer(bitacoras, many = True)  
+            areas = Area.objects.all()
+            area_serializer = AreaSerializer(areas, many = True)  
             return JsonResponse(area_serializer.data,safe=False)
         
         elif request.method == 'POST':
@@ -92,8 +92,13 @@ def areasApi(request,id=0):
 def bitacorasApi(request,id=0):
     try: 
         if request.method == 'GET':
-            bitacoras = Bitacora.objects.all()
-            bitacora_serializer = BitacoraSerializer(bitacoras, many = True)  
+            if id == 0:
+                bitacoras = Bitacora.objects.all()
+                bitacora_serializer = BitacoraSerializer(bitacoras, many = True)  
+            else:
+                bitacoras = Bitacora.objects.get(BitacoraId = id)
+                bitacora_serializer = BitacoraSerializer(bitacoras)  
+                
             return JsonResponse(bitacora_serializer.data,safe=False)
         
         elif request.method == 'POST':
